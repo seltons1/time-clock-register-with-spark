@@ -31,5 +31,9 @@ class FormatInDataFrame():
         df_final = df_final.withColumnRenamed("col4","name")
         df_final = df_final.withColumnRenamed("col7","datetime")
 
+        df_final = df_final.withColumn("time", split(df_final["datetime"]," ").getItem(2))
+
+
+
         return df_final
 
