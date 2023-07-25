@@ -24,18 +24,8 @@ if __name__ == '__main__':
     
     df = obj.create_dataframe_with_column(lines)
 
-    data = [("alessandro","Monday","08:00:00","01:00:00"),
-            ("alessandro","Tuesday","08:00:00","01:00:00")]
-    
-    schema = StructType([ \
-        StructField("name",StringType(),True), \
-        StructField("week_day",StringType(),True), \
-        StructField("total_work",StringType(),True), \
-        StructField("lunch_time", StringType(), True)
-    ])
-
-    df_1 = spark.createDataFrame(data=data, schema=schema)
-    df_1.show()
+ 
+    df_1 = obj.create_df_employee_times()
 
     df_1.createOrReplaceTempView("hor")
     df.createOrReplaceTempView("data")

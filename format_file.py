@@ -116,3 +116,57 @@ class FormatInDataFrame():
             
         return linhas_list
         
+
+    def create_df_employee_times(self):
+
+        data = [("alessandro","Monday","08:00:00","01:00:00"),
+                ("alessandro","Tuesday","08:00:00","01:00:00"),
+                ("alessandro","Wednesday","08:00:00","01:00:00"),
+                ("alessandro","Thursday","08:00:00","01:00:00"),
+                ("alessandro","Friday","08:00:00","01:00:00"),
+                ("alessandro","Saturday","08:00:00","01:00:00"),
+
+                ("antonio","Monday","08:00:00","01:00:00"),
+                ("antonio","Tuesday","08:00:00","01:00:00"),
+                ("antonio","Wednesday","08:00:00","01:00:00"),
+                ("antonio","Thursday","08:00:00","01:00:00"),
+                ("antonio","Friday","08:00:00","01:00:00"),
+                ("antonio","Saturday","08:00:00","01:00:00"),
+
+                ("heloisa","Monday","08:00:00","01:00:00"),
+                ("heloisa","Tuesday","08:00:00","01:00:00"),
+                ("heloisa","Wednesday","08:00:00","01:00:00"),
+                ("heloisa","Thursday","08:00:00","01:00:00"),
+                ("heloisa","Friday","08:00:00","01:00:00"),
+                ("heloisa","Saturday","08:00:00","01:00:00"),
+
+                ("fernando","Monday","08:00:00","01:00:00"),
+                ("fernando","Tuesday","08:00:00","01:00:00"),
+                ("fernando","Wednesday","08:00:00","01:00:00"),
+                ("fernando","Thursday","08:00:00","01:00:00"),
+                ("fernando","Friday","08:00:00","01:00:00"),
+                ("fernando","Saturday","08:00:00","01:00:00"),
+
+                ("maxwell","Monday","08:00:00","01:00:00"),
+                ("maxwell","Tuesday","08:00:00","01:00:00"),
+                ("maxwell","Wednesday","08:00:00","01:00:00"),
+                ("maxwell","Thursday","08:00:00","01:00:00"),
+                ("maxwell","Friday","08:00:00","01:00:00"),
+                ("maxwell","Saturday","08:00:00","01:00:00"),
+
+                ("ricardo","Monday","08:00:00","01:00:00"),
+                ("ricardo","Tuesday","08:00:00","01:00:00"),
+                ("ricardo","Wednesday","08:00:00","01:00:00"),
+                ("ricardo","Thursday","08:00:00","01:00:00"),
+                ("ricardo","Friday","08:00:00","01:00:00"),
+                ("ricardo","Saturday","08:00:00","01:00:00")]
+    
+        schema = StructType([ \
+            StructField("name",StringType(),True), \
+            StructField("week_day",StringType(),True), \
+            StructField("total_work",StringType(),True), \
+            StructField("lunch_time", StringType(), True)
+        ])
+
+        df_1 = self.spark.createDataFrame(data=data, schema=schema)
+        return df_1
