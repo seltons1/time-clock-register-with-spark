@@ -60,23 +60,8 @@ class FormatInDataFrame():
         df_final = df_final.withColumn("arrived_afternoon", to_timestamp(df_final.entrada_tarde, "HH:mm:ss"))
         df_final = df_final.withColumn("leave_afternoon", to_timestamp(df_final.saida_tarde, "HH:mm:ss"))
         df_final = df_final.withColumn("week_day", date_format(df_final.data, "EEEE"))
-        df_final = df_final.withColumn("morning_work", expr("CONCAT_WS(':', lpad(floor((unix_timestamp(leave_morning) - unix_timestamp(arrived_morning)) / 3600), 2, '0'), \
-                                                            lpad(floor(((unix_timestamp(leave_morning) - unix_timestamp(arrived_morning)) % 3600) / 60), 2, '0'))"))
-        df_final = df_final.withColumn("afternoon_work", expr("CONCAT_WS(':', lpad(floor((unix_timestamp(leave_afternoon) - unix_timestamp(arrived_afternoon)) / 3600), 2, '0'), \
-                                                              lpad(floor(((unix_timestamp(leave_afternoon) - unix_timestamp(arrived_afternoon)) % 3600) / 60), 2, '0'))"))
-        df_final = df_final.withColumn("total_work", expr("CONCAT_WS(':', lpad(floor((unix_timestamp(morning_work) + unix_timestamp(afternoon_work)) / 3600), 2, '0'), \
-                                                          lpad(floor(((unix_timestamp(morning_work) + unix_timestamp(afternoon_work)) % 3600) / 60), 2, '0'))"))
-        df_final = df_final.withColumn("lunch_time", expr("CONCAT_WS(':', lpad(floor((unix_timestamp(arrived_afternoon) - unix_timestamp(leave_morning)) / 3600), 2, '0'), \
-                                                          lpad(floor(((unix_timestamp(arrived_afternoon) - unix_timestamp(leave_morning)) % 3600) / 60), 2, '0'))"))
 
-        df_final.show(truncate=False)
-        
-        df_final.createOrReplaceTempView("REG")
-        df = self.spark.sql("select name, data, arrived_morning, leave_morning, arrived_afternoon, leave_afternoon, \
-                leave_morning-arrived_morning as morning_work, leave_afternoon-arrived_afternoon as afternoon_work, \
-                morning_work+afternoon_work as total_work, arrived_afternoon-leave_morning as lunch_time, week_day from REG")
-        
-        return df
+        return df_final
 
     def explode_columns(self, df):
 
@@ -180,3 +165,22 @@ class FormatInDataFrame():
 
         df_1 = self.spark.createDataFrame(data=data, schema=schema)
         return df_1
+
+    def add_column(self, df, expression, field_name):
+        
+        # Calcular a diferença entre os timestamps em segundos
+        df_with_seconds = df.withColumn("time_diff_seconds",
+                                        expr(f"{expression}"))
+
+        # Extrair as horas, minutos e segundos da diferença
+        df_with_hms = df_with_seconds.withColumn("hours", expr("time_diff_seconds div 3600")) \
+                                    .withColumn("minutes", expr("(time_diff_seconds div 60) % 60")) \
+                                    .withColumn("seconds", expr("time_diff_seconds % 60"))
+
+        # Formatar a coluna com o resultado no formato HH:MM:SS
+        df_with_hh_mm_ss = df_with_hms.withColumn(f"{field_name}",
+                                                expr("concat(lpad(hours, 2, '0'), ':', lpad(minutes, 2, '0'), ':', lpad(seconds, 2, '0'))"))
+
+        df_with_hh_mm_ss = df_with_hh_mm_ss.drop("time_diff_seconds","hours","minutes","seconds")
+
+        return df_with_hh_mm_ss
